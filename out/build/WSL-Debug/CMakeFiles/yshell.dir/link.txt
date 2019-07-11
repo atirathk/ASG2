@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/yshell.dir/commands.cpp.o CMakeFiles/yshell.dir/file_sys.cpp.o CMakeFiles/yshell.dir/debug.cpp.o CMakeFiles/yshell.dir/util.cpp.o CMakeFiles/yshell.dir/testClient.cpp.o  -o yshell 

@@ -1,0 +1,4 @@
+/mnt/c/Users/Atirath/source/repos/CMPS109/ASG2/out/build/WSL-Debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Atirath/source/repos/CMPS109/ASG2/out/build/WSL-Debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Atirath/source/repos/CMPS109/ASG2/out/build/WSL-Debug/CMakeFiles/yshell.dir
+/mnt/c/Users/Atirath/source/repos/CMPS109/ASG2/out/build/WSL-Debug/CMakeFiles/run.dir
