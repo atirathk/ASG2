@@ -20,7 +20,7 @@ using command_hash = unordered_map<string, command_fn>;
 
 class command_error : public runtime_error {
 public:
-	explicit command_error(const string& what);
+     explicit command_error(const string& what);
 };
 
 // execution functions -

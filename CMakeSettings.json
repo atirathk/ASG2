@@ -10,7 +10,8 @@
 															"cmakeCommandArgs": "",
 															"buildCommandArgs": "-v",
 															"ctestCommandArgs": "",
-															"variables": []
+															"variables": [],
+															"intelliSenseMode": "windows-msvc-x64"
 										},
 										{
 															"name": "WSL-Debug",
@@ -19,7 +20,7 @@
 															"buildRoot": "${projectDir}\\out\\build\\${name}",
 															"installRoot": "${projectDir}\\out\\install\\${name}",
 															"cmakeExecutable": "/usr/bin/cmake",
-															"cmakeCommandArgs": "testFile.txt",
+															"cmakeCommandArgs": "",
 															"buildCommandArgs": "",
 															"ctestCommandArgs": "",
 															"inheritEnvironments": [ "linux_x64" ],
@@ -27,6 +28,27 @@
 															"addressSanitizerRuntimeFlags": "detect_leaks=0",
 															"variables": [],
 															"intelliSenseMode": "linux-gcc-x64"
+										},
+										{
+															"name": "Linux-Debug",
+															"generator": "Unix Makefiles",
+															"configurationType": "Debug",
+															"cmakeExecutable": "/usr/bin/cmake",
+															"remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
+															"cmakeCommandArgs": "",
+															"buildCommandArgs": "",
+															"ctestCommandArgs": "",
+															"inheritEnvironments": [ "linux_x64" ],
+															"remoteMachineName": "999733134;unix.ucsc.edu (username=arkosire, port=22, authentication=Password)",
+															"remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
+															"remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
+															"remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
+															"remoteCopySources": true,
+															"rsyncCommandArgs": "-t --delete --delete-excluded",
+															"remoteCopyBuildOutput": false,
+															"remoteCopySourcesMethod": "rsync",
+															"addressSanitizerRuntimeFlags": "detect_leaks=0",
+															"variables": []
 										}
 					]
 }

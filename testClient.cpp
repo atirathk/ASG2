@@ -43,9 +43,8 @@ using namespace std;
 int main(int argc, char** argv) {
 	base_file_ptr dir;
 	vector<string> sv;
-	sv.push_back("This is some random stuff\n");
-	sv.push_back("don't know what else to say\n");
-	dir->mkfile("newFile");
+     sv.push_back("")
+     fn_make()
 	return 0;
 }
 

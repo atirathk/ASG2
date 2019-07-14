@@ -45,10 +45,10 @@ bool want_echo();
 
 class exit_status {
 private:
-	static int status;
+     static int status;
 public:
-	static void set(int);
-	static int get();
+     static void set(int);
+     static int get();
 };
 
 
@@ -75,21 +75,21 @@ ostream& complain();
 
 template <typename item_t>
 ostream& operator<< (ostream& out, const vector<item_t>& vec) {
-	string space = "";
-	for (const auto& item : vec) {
-		out << space << item;
-		space = " ";
-	}
-	return out;
+     string space = "";
+     for (const auto& item : vec) {
+          out << space << item;
+          space = " ";
+     }
+     return out;
 }
 
 template <typename iterator>
 ostream& operator<< (ostream& out, range_type<iterator> range) {
-	for (auto itor = range.first; itor != range.second; ++itor) {
-		if (itor != range.first) out << " ";
-		out << *itor;
-	}
-	return out;
+     for (auto itor = range.first; itor != range.second; ++itor) {
+          if (itor != range.first) out << " ";
+          out << *itor;
+     }
+     return out;
 }
 
 #endif

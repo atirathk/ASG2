@@ -14,6 +14,12 @@
 # EXTERNAL cache entries
 ########################
 
+//Value Computed by CMake
+ASG2_BINARY_DIR:STATIC=C:/Users/Atirath/source/repos/CMPS109/ASG2/out/build/x64-Debug
+
+//Value Computed by CMake
+ASG2_SOURCE_DIR:STATIC=C:/Users/Atirath/source/repos/CMPS109/ASG2
+
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
 CMAKE_BUILD_TYPE:STRING=Debug
@@ -117,7 +123,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=Project
+CMAKE_PROJECT_NAME:STATIC=ASG2
 
 //RC compiler
 CMAKE_RC_COMPILER:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x64/rc.exe
@@ -189,12 +195,6 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 // during the make.  This is useful for debugging only. With Visual
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
-
-//Value Computed by CMake
-Project_BINARY_DIR:STATIC=C:/Users/Atirath/source/repos/CMPS109/ASG2/out/build/x64-Debug
-
-//Value Computed by CMake
-Project_SOURCE_DIR:STATIC=C:/Users/Atirath/source/repos/CMPS109/ASG2
 
 
 ########################

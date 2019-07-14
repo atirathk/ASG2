@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <unordered_map>
-
+#include<string>
 using namespace std;
 
 #include "debug.h"
@@ -12,110 +12,165 @@ using namespace std;
 int inode::next_inode_nr{ 1 };
 
 struct file_type_hash {
-	size_t operator() (file_type type) const {
-		return static_cast<size_t> (type);
-	}
+     size_t operator() (file_type type) const {
+          return static_cast<size_t> (type);
+     }
 };
 
 ostream& operator<< (ostream& out, file_type type) {
-	static unordered_map<file_type, string, file_type_hash> hash{
-	   {file_type::PLAIN_TYPE, "PLAIN_TYPE"},
-	   {file_type::DIRECTORY_TYPE, "DIRECTORY_TYPE"},
-	};
-	return out << hash[type];
+     static unordered_map<file_type, string, file_type_hash> hash{
+        {file_type::PLAIN_TYPE, "PLAIN_TYPE"},
+        {file_type::DIRECTORY_TYPE, "DIRECTORY_TYPE"},
+     };
+     return out << hash[type];
 }
 
 inode_state::inode_state() {
-	DEBUGF('i', "root = " << root << ", cwd = " << cwd
-		<< ", prompt = \"" << prompt() << "\"");
+     //DEBUGF('i', "root = " << root << ", cwd = " << cwd
+     //     << ", prompt = \"" << prompt() << "\"");
+     
+     root->contents->init_dir(root, root);
 }
 
-const string& inode_state::prompt() const { return prompt_; }
+const string& inode_state::prompt() const { return static_cast<const string&>(prompt_); }
+
+void inode_state::setPrompt(const wordvec& newPrompt) {
+     for (auto i = newPrompt.begin(); i != newPrompt.end(); i++) {
+          prompt_.append(*i);
+     }
+}
 
 ostream& operator<< (ostream& out, const inode_state& state) {
-	out << "inode_state: root = " << state.root
-		<< ", cwd = " << state.cwd;
-	return out;
+     out << "inode_state: root = " << state.root
+          << ", cwd = " << state.cwd;
+     return out;
 }
 
 inode::inode(file_type type) : inode_nr(next_inode_nr++) {
-	switch (type) {
-	case file_type::PLAIN_TYPE:
-		contents = make_shared<plain_file>();
-		break;
-	case file_type::DIRECTORY_TYPE:
-		contents = make_shared<directory>();
-		break;
-	}
-	DEBUGF('i', "inode " << inode_nr << ", type = " << type);
+     switch (type) {
+     case file_type::PLAIN_TYPE:
+          contents = make_shared<plain_file>();
+          break;
+     case file_type::DIRECTORY_TYPE:
+          contents = make_shared<directory>();
+          break;
+     }
+     DEBUGF('i', "inode " << inode_nr << ", type = " << type);
+}
+
+bool inode_state::setCwd(const string& dir) {
+     auto map = cwd->contents->getDirents();
+     auto i = map.find(dir);
+     if (i == map.end()) {
+          return false;
+     }
+     cwd = i->second;
+     return true;
+}
+void inode_state::setCwd(const inode_ptr& dir) {
+     cwd = dir;
+}
+inode_ptr inode_state::getcwd() {
+     return cwd;
 }
 
 int inode::get_inode_nr() const {
-	DEBUGF('i', "inode = " << inode_nr);
-	return inode_nr;
+     DEBUGF('i', "inode = " << inode_nr);
+     return inode_nr;
 }
 
+base_file_ptr inode::getContents() {
+     return contents;
+}
 
 file_error::file_error(const string& what) :
-	runtime_error(what) {
+     runtime_error(what) {
 }
 
 size_t plain_file::size() const {
-	size_t size{ 0 };
-	DEBUGF('i', "size = " << size);
-	return size;
+     size_t size{ 0 };
+     for (auto i = data.begin(); i < data.end(); i++) {
+          size += i->length();
+     }
+     DEBUGF('i', "size = " << size);
+     return size;
 }
 
 const wordvec& plain_file::readfile() const {
-	DEBUGF('i', data);
-	return data;
+     DEBUGF('i', data);
+     return data;
 }
 
 void plain_file::writefile(const wordvec& words) {
-	DEBUGF('i', words);
-	for (auto i = words.begin(); i < words.end(); i++) {
-		data.push_back(*i);
-	}
+     DEBUGF('i', words);
+     data = words;
 }
 
 void plain_file::remove(const string&) {
-	throw file_error("is a plain file");
+     throw file_error("is a plain file");
 }
 
 inode_ptr plain_file::mkdir(const string&) {
-	throw file_error("is a plain file");
+     throw file_error("is a plain file");
 }
 
 inode_ptr plain_file::mkfile(const string&) {
-	throw file_error("is a plain file");
+     throw file_error("is a plain file");
 }
 
+map<string, inode_ptr> plain_file::getDirents() {
+     throw file_error("is a plain file");
+}
+
+void plain_file::init_dir(inode_ptr current, inode_ptr parent) {
+     throw file_error("is a plain file");
+}
 
 size_t directory::size() const {
-	size_t size{ 0 };
-	DEBUGF('i', "size = " << size);
-	return size;
+     size_t size{ 0 };
+     DEBUGF('i', "size = " << size);
+     size = dirents.size();
+     return size;
 }
 
 const wordvec& directory::readfile() const {
-	throw file_error("is a directory");
+     throw file_error("is a directory");
 }
 
 void directory::writefile(const wordvec&) {
-	throw file_error("is a directory");
+     throw file_error("is a directory");
 }
 
 void directory::remove(const string& filename) {
-	DEBUGF('i', filename);
+     DEBUGF('i', filename);
+     dirents.erase(filename);
 }
 
 inode_ptr directory::mkdir(const string& dirname) {
-	DEBUGF('i', dirname);
-	dirents[dirname];
+     DEBUGF('i', dirname);
+     auto i = dirents.find(dirname);
+     if (i == dirents.end()) {
+          dirents.erase(i);
+     }
+     dirents[dirname];
 }
 
 inode_ptr directory::mkfile(const string& filename) {
-	DEBUGF('i', filename);
-	dirents[filename];
+     //DEBUGF('i', filename);
+
+     auto i = dirents.find(filename);
+     if (i == dirents.end()) {
+          dirents.erase(i);
+     }
+     dirents[filename];
+}
+
+map<string, inode_ptr> directory::getDirents() {
+     return dirents;
+}
+
+void directory::init_dir(inode_ptr current, inode_ptr parent) {
+     dirents["."] = current;
+     dirents[".."] = parent;
 }
 
