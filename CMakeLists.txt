@@ -23,6 +23,6 @@ ADD_EXECUTABLE(yshell ${MAIN_SOURCES})
 add_custom_target(run
     DEPENDS yshell
     COMMAND ./yshell)
-#add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 
 # TODO: Add tests and install targets if needed.

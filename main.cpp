@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
      execname(argv[0]);
      cout << boolalpha;  // Print false or true instead of 0 or 1.
      cerr << boolalpha;
-     cout << argv[0] << " build " << __DATE__ 
-     << " " << __TIME__ << endl;
+     cout << argv[0] << " build " << __DATE__
+          << " " << __TIME__ << endl;
      scan_options(argc, argv);
      bool need_echo = want_echo();
      inode_state state;
@@ -54,8 +54,9 @@ int main(int argc, char** argv) {
                try {
                     // Read a line, break at EOF, and echo 
                     // print the prompt if one is needed.
+                    //cout << "hu\n";
                     cout << state.prompt();
-                    string line;   
+                    string line;
                     getline(cin, line);
                     if (cin.eof()) {
                          if (need_echo) cout << "^D";

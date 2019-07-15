@@ -9,7 +9,7 @@ using namespace std;
 #include "debug.h"
 #include "file_sys.h"
 
-int inode::next_inode_nr{ 1 };
+size_t inode::next_inode_nr{ 1 };
 
 struct file_type_hash {
      size_t operator() (file_type type) const {
@@ -26,10 +26,9 @@ ostream& operator<< (ostream& out, file_type type) {
 }
 
 inode_state::inode_state() {
-     //DEBUGF('i', "root = " << root << ", cwd = " << cwd
-     //     << ", prompt = \"" << prompt() << "\"");
-     
-     root->contents->init_dir(root, root);
+     root = inode_ptr(new inode(file_type::DIRECTORY_TYPE));
+     root->contents->mkdir("/");
+     cwd = inode_ptr(root);
 }
 
 const string& inode_state::prompt() const { return static_cast<const string&>(prompt_); }
@@ -55,7 +54,6 @@ inode::inode(file_type type) : inode_nr(next_inode_nr++) {
           contents = make_shared<directory>();
           break;
      }
-     DEBUGF('i', "inode " << inode_nr << ", type = " << type);
 }
 
 bool inode_state::setCwd(const string& dir) {
@@ -74,8 +72,7 @@ inode_ptr inode_state::getcwd() {
      return cwd;
 }
 
-int inode::get_inode_nr() const {
-     DEBUGF('i', "inode = " << inode_nr);
+size_t inode::get_inode_nr() const {
      return inode_nr;
 }
 
@@ -85,6 +82,18 @@ base_file_ptr inode::getContents() {
 
 file_error::file_error(const string& what) :
      runtime_error(what) {
+}
+
+//plain_file::~plain_file() {
+//     data.clear();
+//}
+
+plain_file::plain_file() {
+
+}
+
+plain_file::plain_file(wordvec d) {
+     data = d;
 }
 
 size_t plain_file::size() const {
@@ -97,12 +106,12 @@ size_t plain_file::size() const {
 }
 
 const wordvec& plain_file::readfile() const {
-     DEBUGF('i', data);
+     //DEBUGF('i', data);
      return data;
 }
 
 void plain_file::writefile(const wordvec& words) {
-     DEBUGF('i', words);
+     //DEBUGF('i', words);
      data = words;
 }
 
@@ -126,9 +135,19 @@ void plain_file::init_dir(inode_ptr current, inode_ptr parent) {
      throw file_error("is a plain file");
 }
 
+//directory::~directory() {
+//     dirents.~map();
+//}
+
+directory::directory(map<string, inode_ptr> d) {
+     dirents = d;
+}
+directory::directory() {
+
+}
 size_t directory::size() const {
      size_t size{ 0 };
-     DEBUGF('i', "size = " << size);
+     //DEBUGF('i', "size = " << size);
      size = dirents.size();
      return size;
 }
@@ -142,35 +161,84 @@ void directory::writefile(const wordvec&) {
 }
 
 void directory::remove(const string& filename) {
-     DEBUGF('i', filename);
+     //DEBUGF('i', filename);
      dirents.erase(filename);
 }
 
 inode_ptr directory::mkdir(const string& dirname) {
-     DEBUGF('i', dirname);
-     auto i = dirents.find(dirname);
-     if (i == dirents.end()) {
-          dirents.erase(i);
+     inode_ptr newPtr(new inode(file_type::DIRECTORY_TYPE));
+     if (dirname.compare( "/") == 0) {
+          dirents["."] = newPtr;
+          dirents[".."] = nullptr;
+          return newPtr;
      }
-     dirents[dirname];
+     auto j = dirents.emplace(dirname, newPtr);
+     if (j.second == false) {
+          dirents.erase(j.first);
+          //j = dirents.emplace(dirname, newPtr);
+          dirents[dirname] = newPtr;
+     }
+     map<string, inode_ptr> newDirents;
+     newDirents["."] = newPtr;
+     newDirents[".."] = dirents["."];
+     newPtr->getContents()->setDirents(newDirents);
 }
 
 inode_ptr directory::mkfile(const string& filename) {
      //DEBUGF('i', filename);
-
-     auto i = dirents.find(filename);
-     if (i == dirents.end()) {
-          dirents.erase(i);
-     }
-     dirents[filename];
+     //auto j = dirents.emplace(filename);
+     //if(j.second == false) {
+     //     dirents.erase(j.first);
+     //     dirents[filename] = inode_ptr();
+     //}
 }
 
 map<string, inode_ptr> directory::getDirents() {
      return dirents;
 }
 
+void inode_state::rootDir(inode_ptr ptr) {
+     //ptr = shared_ptr<inode>;
+     malloc(sizeof(size_t) * 2 + sizeof(base_file_ptr));
+}
+
 void directory::init_dir(inode_ptr current, inode_ptr parent) {
+     //mkdir(".");
      dirents["."] = current;
      dirents[".."] = parent;
 }
 
+//inode &inode::operator= (const inode& that) {
+//     if (this == nullptr) {
+//     }
+//     size_t next_inode_nr;
+//     size_t inode_nr;
+//     base_file_ptr contents;
+//
+//     this->next_inode_nr = that.next_inode_nr;
+//     this->inode_nr = that.inode_nr;
+//     this->contents = that.contents;
+//}
+
+//inode_ptr inode::operator= (const inode& that) {
+//     //size_t inode_nr;
+//     //size_t next_inode_nr;
+//     //base_file_ptr contents;
+//
+//     inode_nr = that->inode_nr;
+//     next_inode_nr = that->next_inode_nr;
+//     contents = that->contents;
+//}
+
+//base_file_ptr& inode::operator= (const directory* that) {
+//     this->contents = make_shared<directory>();
+//     this->contents = that;
+//}
+
+void plain_file::setDirents(map<string, inode_ptr> newDirents) {
+     throw file_error("is a plain file");
+}
+
+void directory::setDirents(map<string, inode_ptr> newDirents) {
+     dirents = newDirents;
+}

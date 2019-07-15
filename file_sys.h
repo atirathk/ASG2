@@ -46,6 +46,7 @@ public:
      bool setCwd(const string& dir);
      void setCwd(const inode_ptr& dir);
      inode_ptr getcwd();
+     void rootDir(inode_ptr ptr);
 };
 
 // class inode -
@@ -64,13 +65,17 @@ public:
 class inode {
      friend class inode_state;
 private:
-     static int next_inode_nr;
-     int inode_nr;
+     static size_t next_inode_nr;
+     size_t inode_nr;
      base_file_ptr contents;
 public:
      inode(file_type);
-     int get_inode_nr() const;
+     size_t get_inode_nr() const;
      base_file_ptr getContents();
+     //inode copyContents (const inode& that);
+     //inode& operator= (const inode& that);
+     //inode_ptr operator= (const inode& that);
+     //base_file_ptr& operator= (const directory* that)
 };
 
 
@@ -87,10 +92,12 @@ public:
 class base_file {
 protected:
      base_file() = default;
+private:
+     virtual void init_dir(inode_ptr current, inode_ptr parent) = 0;
 public:
      virtual ~base_file() = default;
      base_file(const base_file&) = delete;
-     base_file& operator= (const base_file&) = delete;
+     base_file& operator= (const base_file& that);
      virtual size_t size() const = 0;
      virtual const wordvec& readfile() const = 0;
      virtual void writefile(const wordvec& newdata) = 0;
@@ -98,7 +105,8 @@ public:
      virtual inode_ptr mkdir(const string& dirname) = 0;
      virtual inode_ptr mkfile(const string& filename) = 0;
      virtual map<string, inode_ptr> getDirents() = 0;
-     virtual void init_dir(inode_ptr current, inode_ptr parent) = 0;
+     virtual void setDirents(map<string, inode_ptr> newDirents) = 0;
+
 };
 
 // class plain_file -
@@ -113,7 +121,12 @@ public:
 class plain_file : public base_file {
 private:
      wordvec data;
+     virtual void init_dir(inode_ptr current, inode_ptr parent) override;
+     virtual void setDirents(map<string, inode_ptr> newDirents) override;
 public:
+     //~plain_file();
+     plain_file(wordvec d);
+     plain_file();
      virtual size_t size() const override;
      virtual const wordvec& readfile() const override;
      virtual void writefile(const wordvec& newdata) override;
@@ -121,7 +134,6 @@ public:
      virtual inode_ptr mkdir(const string& dirname) override;
      virtual inode_ptr mkfile(const string& filename) override;
      virtual map<string, inode_ptr> getDirents() override;
-     virtual void init_dir(inode_ptr current, inode_ptr parent) override;
 };
 
 // class directory -
@@ -147,6 +159,9 @@ private:
      // Must be a map, not unordered_map, so printing is lexicographic
      map<string, inode_ptr> dirents;
 public:
+     //~directory() = default;
+     directory(map<string, inode_ptr> d);
+     directory();
      virtual size_t size() const override;
      virtual const wordvec& readfile() const override;
      virtual void writefile(const wordvec& newdata) override;
@@ -154,7 +169,10 @@ public:
      virtual inode_ptr mkdir(const string& dirname) override;
      virtual inode_ptr mkfile(const string& filename) override;
      virtual map<string, inode_ptr> getDirents() override;
+     virtual void setDirents(map<string, inode_ptr> newDirents) override;
      virtual void init_dir(inode_ptr current, inode_ptr parent) override;
+
+     //directory operator= (const directory& that);
 };
 
 #endif

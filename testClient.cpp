@@ -41,11 +41,9 @@ using namespace std;
 //    Main program which loops reading commands until end of file.
 
 int main(int argc, char** argv) {
-	base_file_ptr dir;
 	vector<string> sv;
-     sv.push_back("")
-     fn_make()
+     sv.push_back("");
+     inode_state state;
+     state.getcwd()->getContents()->getDirents();
 	return 0;
 }
-
-//add_executable(ASG2 "testClient.cpp", "file_sys.cpp", "file_sys.h", "debug.cpp", "debug.h", "util.cpp", "util.h", "commands.cpp", "commands.h", "main.cpp")

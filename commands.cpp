@@ -110,7 +110,10 @@ void fn_prompt(inode_state& state, const wordvec& words) {
 void fn_pwd(inode_state& state, const wordvec& words) {
      //DEBUGF('c', state);
      //DEBUGF('c', words);
-     //cout << state.getcwd()->getContents()->getDirents()->find();
+     if (state.getcwd()->getContents()->getDirents()[".."] == nullptr) {
+          cout << "/\n";
+     }
+     //state.getcwd()->getContents()->getDirents()[];
 }
 
 void fn_rm(inode_state& state, const wordvec& words) {
